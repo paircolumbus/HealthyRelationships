@@ -11,25 +11,25 @@ end
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    #insert our associations here
+    #insert our columns here
 
     t.timestamps
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    #insert our associations here
+    #insert our columns here
 
     t.timestamps
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our associations here
+    #insert our columns here
 
     t.timestamps
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    #insert our associations here
+    #insert our columns here
 
     t.timestamps
   end
