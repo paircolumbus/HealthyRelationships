@@ -1,4 +1,6 @@
 require 'active_record'
+require 'table_print'
+require 'awesome_print'
 
 def setup
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
@@ -67,16 +69,29 @@ class User < ActiveRecord::Base
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
-#<< Attempting to insert into database
-hotel = Hotel.create!(name: "Westin", room_count: 200)
-hotel.rooms << Room.create!(rate: 200)
-hotel.rooms << Room.create!(rate: 50)
-puts Room.first.hotel
+def line_sep(title=nil); print "\n#{title} ----\n\n"; end
+def random_loc; (('a'..'e').to_a.sample) + rand(1..5).to_s; end
+
+hotel = Hotel.create!(name: "Westin", room_count: 5)
+
+5.times do 
+  hotel.rooms << Room.create!(
+    rate: [125,200,175].sample,
+    location: random_loc
+  ) 
+end
+
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
-b = Booking.create!(guest: user, room: room)
-p user.bookings
-p user.booked_rooms
-p hotel.rooms
-p hotel.bookings
-p hotel.guests
+b = Booking.create!(guest: user, room: room, check_in: Time.now)
+
+line_sep("#{user.name} bookings")
+tp user.bookings
+line_sep
+tp user.booked_rooms
+line_sep("#{hotel.name} Hotel")
+tp hotel.rooms
+line_sep
+tp hotel.bookings
+line_sep
+tp hotel.booked_guests
