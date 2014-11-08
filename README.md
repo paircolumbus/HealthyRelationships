@@ -10,6 +10,7 @@ Under the surface, Active Record provides a level of abstraction that helps you 
 ##Instructions
 Fill out the migrations and models in the `associations.rb` file in such a way that the resulting methods produce the expected output. I've also included a few helper gems that should help with visualizing these models and their relationships.
 
+__Example:__
 ```
 class Person < ActiveRecord::Base  
   has_many :orders  
@@ -17,6 +18,9 @@ end
 
 Person.create(name: Jill, age: 45)  
 Person.orders << Order.create(description: "Pizza Boxes")  
+```
+
+```
 p Person.orders.first => #<Order: id: 1, description: '...'>
 ```
 
