@@ -15,25 +15,25 @@ def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
     #insert our columns here
 
-    t.timestamps
+    t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
     #insert our columns here
 
-    t.timestamps
+    t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
     #insert our columns here
 
-    t.timestamps
+    t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
     #insert our columns here
 
-    t.timestamps
+    t.timestamps null: false
   end
 end
 
