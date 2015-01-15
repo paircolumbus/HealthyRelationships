@@ -13,27 +13,32 @@ end
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    #insert our columns here
+    t.string :name
+    t.integer :room_count
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    #insert our columns here
+    t.integer :hotel_id
+    t.integer :rate
+    t.string :location
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our columns here
+    t.integer :user_id
+    t.integer :room_id
+    t.datetime :check_in
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    #insert our columns here
+    t.string :name
 
-    t.timestamps
+    t.timestamps null:false
   end
 end
 
@@ -46,25 +51,28 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
- 
+  has_many :rooms
+  has_many :bookings, through: :rooms
+  has_many :booked_guests, through: :bookings, source: :guest
+
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :room
+  belongs_to :guest, foreign_key: "user_id", class_name: "User"
 end
 
 class Room < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :hotel
+  has_many :bookings
 end
 
 class User < ActiveRecord::Base
-  #insert our associations here
+  has_many :bookings
+  has_many :booked_rooms, through: :bookings, source: :room
 
 end
 
