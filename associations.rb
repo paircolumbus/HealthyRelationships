@@ -52,24 +52,17 @@ migrate()
 
 class Hotel < ActiveRecord::Base
   has_many :rooms
+  has_many :bookings, :through => :rooms
+  has_many :booked_guests, :through => :bookings, :source => :guest
 
   def to_s
     "#{name} with #{rooms.count} rooms"
-  end
-
-  def bookings
-    rooms.flat_map { |r| r.bookings }
-  end
-
-  def booked_guests
-    bookings.flat_map { |b| b.guest }
   end
 end
 
 class Booking < ActiveRecord::Base
   belongs_to :room
-  belongs_to :user
-  alias_attribute :guest, :user
+  belongs_to :guest, :foreign_key => "user_id", :class_name => "User"
 end
 
 class Room < ActiveRecord::Base
@@ -79,10 +72,8 @@ end
 
 class User < ActiveRecord::Base
   has_many :bookings
+  has_many :booked_rooms, :through => :bookings, :source => :room
 
-  def booked_rooms
-    bookings.map { |b| b.room }
-  end
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
