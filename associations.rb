@@ -13,27 +13,32 @@ end
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    #insert our columns here
+    t.string :name
+    t.integer :room_count
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    #insert our columns here
+    t.integer :hotel_id
+    t.integer :rate
+    t.string :location
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our columns here
+    t.integer :user_id
+    t.integer :room_id
+    t.datetime :check_in
 
-    t.timestamps
+    t.timestamps null:false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    #insert our columns here
+    t.string :name
 
-    t.timestamps
+    t.timestamps null:false
   end
 end
 
@@ -46,26 +51,38 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
- 
+  has_many :rooms
+
   def to_s
     "#{name} with #{rooms.count} rooms"
+  end
+
+  def bookings
+    rooms.flat_map { |r| r.bookings }
+  end
+
+  def booked_guests
+    bookings.flat_map { |b| b.guest }
   end
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :room
+  belongs_to :user
+  alias_attribute :guest, :user
 end
 
 class Room < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :hotel
+  has_many :bookings
 end
 
 class User < ActiveRecord::Base
-  #insert our associations here
+  has_many :bookings
 
+  def booked_rooms
+    bookings.map { |b| b.room }
+  end
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
