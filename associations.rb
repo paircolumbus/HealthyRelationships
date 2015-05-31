@@ -51,12 +51,17 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  has_many :rooms
-  has_many :bookings, through: :rooms
-  has_many :booked_guests, through: :bookings, source: :guest
+
+  has_many  :rooms
+  has_many  :bookings, through: :rooms
+  has_many  :booked_guests, through: :bookings, source: :guest
 
   def to_s
     "#{name} with #{rooms.count} rooms"
+  end
+
+  def update_room_count
+    room_count = rooms.count
   end
 end
 
@@ -68,9 +73,15 @@ class Booking < ActiveRecord::Base
 end
 
 class Room < ActiveRecord::Base
+  after_create  :update_hotel
+  after_destroy :update_hotel
+
   has_many   :bookings
   belongs_to :hotel
 
+  def update_hotel
+    hotel.update_room_count if hotel
+  end
 end
 
 class User < ActiveRecord::Base
@@ -106,3 +117,4 @@ line_sep
 tp hotel.bookings
 line_sep
 tp hotel.booked_guests
+require 'pry' ; binding.pry
