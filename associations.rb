@@ -47,10 +47,9 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
   has_many  :rooms
-  has_many  :booked_guests
-  has_many  :bookings, through: :bookings, source: :guest
+  has_many  :bookings, through: :rooms
+  has_many  :booked_guests, through: :bookings, source: :guest
 
   def to_s
     "#{name} with #{rooms.count} rooms"
@@ -58,21 +57,18 @@ class Hotel < ActiveRecord::Base
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
   belongs_to :guest, class_name: "User", foreign_key: "user_id"
   belongs_to :room
 
 end
 
 class Room < ActiveRecord::Base
-  #insert our associations here
   belongs_to :hotel
   has_many  :bookings
 
 end
 
 class User < ActiveRecord::Base
-  #insert our associations here
   has_many :bookings
   has_many :booked_rooms, through: :bookings, source: :room
 end
