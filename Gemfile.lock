@@ -34,3 +34,6 @@ DEPENDENCIES
   awesome_print
   sqlite3
   table_print
+
+BUNDLED WITH
+   1.10.3
