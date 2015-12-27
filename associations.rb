@@ -13,33 +13,25 @@ end
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    t.string :name
-    t.integer :room_count
+    #insert our columns here
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    t.references :booking
-    t.references :hotel
-
-    t.integer :rate
-    t.string :location
+    #insert our columns here
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    t.references :user
-    t.references :hotel
-
-    t.date :check_in
+    #insert our columns here
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    t.string :name
+    #insert our columns here
 
     t.timestamps null: false
   end
@@ -54,45 +46,26 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  has_many :rooms
-  has_many :bookings
-
-  def booked_guests
-    list = []
-    self.bookings.each do |item|
-      list << item.user
-    end
-    list
-  end
-
+  #insert our associations here
+ 
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
 end
 
 class Booking < ActiveRecord::Base
-  belongs_to :user
-  belongs_to :hotel
-  has_one :room
+  #insert our associations here
 
 end
 
 class Room < ActiveRecord::Base
-  belongs_to :booking
-  belongs_to :hotel
+  #insert our associations here
 
 end
 
 class User < ActiveRecord::Base
-  has_many :bookings
+  #insert our associations here
 
-  def booked_rooms
-    list = []
-    self.bookings.each do |item|
-      list << item.room
-    end
-    list
-  end
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
@@ -101,17 +74,16 @@ def random_loc; (('a'..'e').to_a.sample) + rand(1..5).to_s; end
 
 hotel = Hotel.create!(name: "Westin", room_count: 5)
 
-5.times do
+5.times do 
   hotel.rooms << Room.create!(
     rate: [125,200,175].sample,
     location: random_loc
-  )
+  ) 
 end
 
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
-b = Booking.create!(user: user, room: room, check_in: Time.now)
-hotel.bookings << b
+b = Booking.create!(guest: user, room: room, check_in: Time.now)
 
 line_sep("#{user.name} bookings")
 tp user.bookings
