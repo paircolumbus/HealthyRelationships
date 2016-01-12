@@ -1,6 +1,7 @@
 require 'active_record'
 require 'table_print'
 require 'awesome_print'
+require 'pry'
 
 def setup
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
@@ -14,24 +15,36 @@ end
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
     #insert our columns here
+    t.string :name
+    t.integer :room_count
+
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
     #insert our columns here
+    t.integer :hotel_id
+    t.integer :rate
+    t.string :location
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
     #insert our columns here
+    t.integer :user_id
+    t.integer :room_id
+    t.datetime :check_in
+
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
     #insert our columns here
+    t.string :name
+
 
     t.timestamps null: false
   end
@@ -47,24 +60,40 @@ migrate()
 
 class Hotel < ActiveRecord::Base
   #insert our associations here
+  has_many :rooms
+  has_many :bookings, through: :rooms
  
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
+
+  def booked_guests
+    bookings.map{|booking| booking.guest}
+  end
+
 end
 
 class Booking < ActiveRecord::Base
   #insert our associations here
+  belongs_to :room
+  belongs_to :guest, foreign_key: "user_id", class_name: "User"
 
 end
 
 class Room < ActiveRecord::Base
   #insert our associations here
+  belongs_to :hotel
+  has_many :bookings
 
 end
 
 class User < ActiveRecord::Base
   #insert our associations here
+  has_many :bookings
+
+  def booked_rooms
+    bookings.map{|booking| booking.room}
+  end
 
 end
 
@@ -84,6 +113,8 @@ end
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
 b = Booking.create!(guest: user, room: room, check_in: Time.now)
+
+binding.pry
 
 line_sep("#{user.name} bookings")
 tp user.bookings
