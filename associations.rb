@@ -114,8 +114,6 @@ user = User.create!(name: "John Smith")
 room = hotel.rooms.first
 b = Booking.create!(guest: user, room: room, check_in: Time.now)
 
-binding.pry
-
 line_sep("#{user.name} bookings")
 tp user.bookings
 line_sep
