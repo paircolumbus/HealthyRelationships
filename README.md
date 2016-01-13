@@ -28,3 +28,4 @@ p Person.orders.first => #<Order: id: 1, description: '...'>
 [Table Print Gem](http://tableprintgem.com/)  
 [Awesome Print Gem](https://github.com/michaeldv/awesome_print)  
 [Active Record Basics](http://guides.rubyonrails.org/active_record_basics.html)
+[Association Basics](http://guides.rubyonrails.org/association_basics.html)
