@@ -84,10 +84,6 @@ end
 class User < ActiveRecord::Base
   has_many :bookings, foreign_key: :guest
 
-  def bookings
-    Booking.where(:guest => id)
-  end
-
   def booked_rooms
     bookings.collect_concat {|b| b.room}
   end
@@ -107,14 +103,9 @@ hotel = Hotel.create!(name: "Westin", room_count: 5)
   )
 end
 
-p hotel.rooms
-
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
-b = Booking.create!(guest: user, room: room, check_in: Time.now)
-
-p user
-p hotel.rooms.first.bookings
+b = Booking.create!(guest: user.id, room: room, check_in: Time.now) 
 
 line_sep("#{user.name} bookings")
 tp user.bookings
