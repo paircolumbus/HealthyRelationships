@@ -30,8 +30,8 @@ def generate_migrations
 
   ActiveRecord::Migration.create_table :bookings do |t|
     t.datetime :check_in
-    t.integer :guest
-    t.integer :room
+    t.integer :user_id
+    t.integer :room_id
 
     t.timestamps null: false
   end
@@ -65,30 +65,30 @@ class Hotel < ActiveRecord::Base
   end
 
   def booked_guests
-    bookings.map{|b| b.guest}.uniq
+    bookings.map{|b| b.user_id}.uniq
   end
-end
-
-class Booking < ActiveRecord::Base
-  belongs_to :room, foreign_key: :room
-  belongs_to :user, foreign_key: :guest
-
 end
 
 class Room < ActiveRecord::Base
   belongs_to :hotel
-  has_many :bookings, foreign_key: :room
+  has_many :bookings
 
 end
 
+class Booking < ActiveRecord::Base
+  belongs_to :room
+  belongs_to :user
+end
+
 class User < ActiveRecord::Base
-  has_many :bookings, foreign_key: :guest
+  has_many :bookings
 
   def booked_rooms
     bookings.collect_concat {|b| b.room}
   end
 
 end
+
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
 def line_sep(title=nil); print "\n#{title} ----\n\n"; end
@@ -105,7 +105,7 @@ end
 
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
-b = Booking.create!(guest: user.id, room: room, check_in: Time.now) 
+b = Booking.create!(user_id: user.id, room_id: room.id, check_in: Time.now)
 
 line_sep("#{user.name} bookings")
 tp user.bookings
