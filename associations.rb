@@ -45,7 +45,9 @@ migrate
 #####  ^^ Do Not Modify ^^ ####
 
 class Hotel < ActiveRecord::Base
-  # insert our associations here
+  has_many :rooms
+  has_many :bookings, through: :rooms
+  has_many :booked_guests, through: :bookings, source: :guest
 
   def to_s
     "#{name} with #{rooms.count} rooms"
@@ -53,15 +55,18 @@ class Hotel < ActiveRecord::Base
 end
 
 class Booking < ActiveRecord::Base
-  # insert our associations here
+  belongs_to :guest, class_name: 'User', foreign_key: 'user_id'
+  belongs_to :room, foreign_key: 'room_id'
 end
 
 class Room < ActiveRecord::Base
-  # insert our associations here
+  belongs_to :hotel, foreign_key: 'hotel_id'
+  has_many :bookings
 end
 
 class User < ActiveRecord::Base
-  # insert our associations here
+  has_many :bookings
+  has_many :booked_rooms, through: :bookings, source: :room
 end
 
 # DO NOT CHANGE ANYTHING BELOW THIS LINE.
@@ -84,7 +89,7 @@ end
 
 user = User.create!(name: 'John Smith')
 room = hotel.rooms.first
-b = Booking.create!(guest: user, room: room, check_in: Time.now)
+Booking.create!(guest: user, room: room, check_in: Time.now)
 
 line_sep("#{user.name} bookings")
 tp user.bookings
