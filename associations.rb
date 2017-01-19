@@ -54,7 +54,7 @@ migrate()
 class Hotel < ActiveRecord::Base
   has_many :rooms
   has_many :bookings, through: :rooms
-  has_many :booked_guests, through: :bookings, source: :user
+  has_many :booked_guests, through: :bookings, source: :guest
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
@@ -62,7 +62,7 @@ end
 
 #establishes connection between room and user
 class Booking < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :guest, class_name: 'User', foreign_key: 'user_id'
   belongs_to :room
   belongs_to :hotel
 end
@@ -96,7 +96,7 @@ end
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
 #changed attribute 'guest' to 'user'
-b = Booking.create!(user: user, room: room, check_in: Time.now)
+b = Booking.create!(guest: user, room: room, check_in: Time.now)
 
 line_sep("#{user.name} bookings")
 tp user.bookings
