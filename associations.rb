@@ -52,14 +52,11 @@ migrate()
 
 #user owns rooms and bookings, and users through bookings
 class Hotel < ActiveRecord::Base
-  has_many :rooms, dependent: :destroy
-  has_many :bookings, dependent: :destroy
-  has_many :users, through: :bookings
+  has_many :rooms
+  has_many :bookings, through: :rooms
+  has_many :booked_guests, through: :bookings, source: :user
   def to_s
     "#{name} with #{rooms.count} rooms"
-  end
-  def booked_guests
-    self.users
   end
 end
 
@@ -79,11 +76,8 @@ end
 
 #user has many bookings, has rooms through those bookings
 class User < ActiveRecord::Base
-  has_many :bookings, dependent: :destroy
-  has_many :rooms, through: :bookings, dependent: :nullify
-  def booked_rooms
-    self.rooms
-  end
+  has_many :bookings
+  has_many :booked_rooms, through: :bookings, source: :room
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
