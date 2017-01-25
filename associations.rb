@@ -58,10 +58,7 @@ migrate()
 class Hotel < ActiveRecord::Base
   #insert our associations here
   has_many :rooms
-
-  def bookings
-    Booking.where(room_id: rooms.map(&:id))
-  end
+  has_many :bookings, through: :rooms
 
   def booked_guests
     User.where(id: bookings.map(&:user_id))
