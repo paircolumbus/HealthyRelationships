@@ -15,11 +15,17 @@ def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
     #insert our columns here
 
+    t.string :name
+    t.integer :room_count
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
     #insert our columns here
+
+    t.belongs_to :hotel, index: true
+    t.integer :rate
+    t.string :location
 
     t.timestamps null: false
   end
@@ -27,12 +33,16 @@ def generate_migrations
   ActiveRecord::Migration.create_table :bookings do |t|
     #insert our columns here
 
+    t.belongs_to :user, index: true
+    t.belongs_to :room, index: true
+    t.timestamp :check_in
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
     #insert our columns here
 
+    t.string :name
     t.timestamps null: false
   end
 end
@@ -47,7 +57,16 @@ migrate()
 
 class Hotel < ActiveRecord::Base
   #insert our associations here
- 
+  has_many :rooms
+
+  def bookings
+    Booking.where(room_id: rooms.map(&:id))
+  end
+
+  def booked_guests
+    User.where(id: bookings.map(&:user_id))
+  end
+
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
@@ -55,17 +74,25 @@ end
 
 class Booking < ActiveRecord::Base
   #insert our associations here
+  belongs_to :guest, class_name: 'User', foreign_key: 'user_id'
+  belongs_to :room
 
 end
 
 class Room < ActiveRecord::Base
   #insert our associations here
+  has_many :bookings
+  belongs_to :hotel, counter_cache: :room_count
 
 end
 
 class User < ActiveRecord::Base
   #insert our associations here
+  has_many :bookings, inverse_of: :guest
 
+  def booked_rooms
+    Room.where(id: bookings.map(&:room_id))
+  end
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
