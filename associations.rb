@@ -59,10 +59,7 @@ class Hotel < ActiveRecord::Base
   #insert our associations here
   has_many :rooms
   has_many :bookings, through: :rooms
-
-  def booked_guests
-    User.where(id: bookings.map(&:user_id))
-  end
+  has_many :booked_guests, through: :bookings, source: 'guest'
 
   def to_s
     "#{name} with #{rooms.count} rooms"
@@ -86,10 +83,7 @@ end
 class User < ActiveRecord::Base
   #insert our associations here
   has_many :bookings, inverse_of: :guest
-
-  def booked_rooms
-    Room.where(id: bookings.map(&:room_id))
-  end
+  has_many :booked_rooms, through: :bookings, source: 'room'
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
