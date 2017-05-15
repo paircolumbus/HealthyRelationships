@@ -14,27 +14,34 @@ end
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
     #insert our columns here
-
+    t.string :name, null: false
+    t.integer :room_count, null: false
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
     #insert our columns here
-
-    t.timestamps null: false
-  end
-
-  ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our columns here
-
+    t.integer :rate, null: false
+    t.string :location, null: false
+    t.references :hotel, index: true, foreign_key: true
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
     #insert our columns here
-
+    t.string :name, null: false
     t.timestamps null: false
   end
+
+  ActiveRecord::Migration.create_table :bookings do |t|
+    #insert our columns here
+    t.datetime :check_in, null: false
+    t.integer :guest, index: true
+    t.integer :room, index: true
+    t.references :hotel, index: true, foreign_key: true
+    t.timestamps null: false
+  end
+
 end
 
 
@@ -46,26 +53,31 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
- 
+  #insert our associations 
+  has_many :rooms
+  has_many :bookings
+  has_many :booked_guests, class_name: 'Booking', foreign_key: 'guest'
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
-
+  #insert our associations
+  belongs_to :user
+  belongs_to :hotel
 end
 
 class Room < ActiveRecord::Base
   #insert our associations here
-
+  belongs_to :hotel
+  belongs_to :user
 end
 
 class User < ActiveRecord::Base
   #insert our associations here
-
+  has_many :bookings, foreign_key: 'guest'
+  has_many :booked_rooms, class_name: 'Booking', foreign_key: 'room'
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
@@ -83,7 +95,7 @@ end
 
 user = User.create!(name: "John Smith")
 room = hotel.rooms.first
-b = Booking.create!(guest: user, room: room, check_in: Time.now)
+b = Booking.create!(guest: user.id, room: room.id, check_in: Time.now, hotel: hotel)
 
 line_sep("#{user.name} bookings")
 tp user.bookings
