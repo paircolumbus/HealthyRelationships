@@ -21,8 +21,8 @@ def generate_migrations
 
   ActiveRecord::Migration.create_table :rooms do |t|
     #insert our columns here
-    t.integer :rate
     t.string :location
+    t.integer :rate
 
     t.belongs_to :hotel
 
