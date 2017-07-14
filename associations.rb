@@ -13,25 +13,32 @@ end
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    #insert our columns here
+    t.string :name
+    t.integer :room_count
+    t.integer :booked_guests
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    #insert our columns here
+    t.belongs_to :hotel
+
+    t.string :location
+    t.integer :rate
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our columns here
+    t.belongs_to :guest   # this is getting guest_id
+    t.belongs_to :room    # this is  getting room_id
+    t.datetime :check_in
 
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    #insert our columns here
+    t.string :name
 
     t.timestamps null: false
   end
@@ -46,26 +53,28 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
- 
+  has_many :rooms
+  has_many :bookings, through: 'rooms'
+  has_many :booked_guests, through: 'bookings', source: 'guest'
+
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :guest, class_name: 'User'
+  belongs_to :room
 end
 
 class Room < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :hotel
+  has_many :bookings
 end
 
 class User < ActiveRecord::Base
-  #insert our associations here
-
+  has_many :bookings, foreign_key: 'guest_id'
+  has_many :booked_rooms, through: 'bookings', source: 'room'
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
@@ -74,11 +83,11 @@ def random_loc; (('a'..'e').to_a.sample) + rand(1..5).to_s; end
 
 hotel = Hotel.create!(name: "Westin", room_count: 5)
 
-5.times do 
+5.times do
   hotel.rooms << Room.create!(
     rate: [125,200,175].sample,
     location: random_loc
-  ) 
+  )
 end
 
 user = User.create!(name: "John Smith")
@@ -95,3 +104,4 @@ line_sep
 tp hotel.bookings
 line_sep
 tp hotel.booked_guests
+line_sep
