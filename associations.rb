@@ -7,33 +7,34 @@ def setup
 end
 
 def migrate
-  ActiveRecord::Migrator.up "db/migrate"
+  ActiveRecord::MigrationContext.new("db/migrate")
 end
 
 
 def generate_migrations
   ActiveRecord::Migration.create_table :hotels do |t|
-    #insert our columns here
-
+    t.string :name
+    t.integer :room_count
+    t.integer :booked_guests
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :rooms do |t|
-    #insert our columns here
-
+    t.integer :hotel_id
+    t.string :location
+    t.integer :rate
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :bookings do |t|
-    #insert our columns here
-
+    t.belongs_to :room
+    t.belongs_to :guest
+    t.datetime :check_in
     t.timestamps null: false
   end
 
   ActiveRecord::Migration.create_table :users do |t|
-    #insert our columns here
-
-    t.timestamps null: false
+    t.integer :name
   end
 end
 
@@ -46,26 +47,29 @@ migrate()
 
 
 class Hotel < ActiveRecord::Base
-  #insert our associations here
- 
+  has_many :rooms
+  has_many :bookings, through: 'rooms'
+  has_many :booked_guests, through: 'bookings', source: 'guest'
+
   def to_s
     "#{name} with #{rooms.count} rooms"
   end
+
 end
 
 class Booking < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :room
+  belongs_to :guest, class_name: "User"
 end
 
 class Room < ActiveRecord::Base
-  #insert our associations here
-
+  belongs_to :Hotel
+  has_many :bookings
 end
 
 class User < ActiveRecord::Base
-  #insert our associations here
-
+  has_many :bookings, foreign_key: 'guest_id'
+  has_many :booked_rooms, through: 'bookings', source: 'room'
 end
 
 #DO NOT CHANGE ANYTHING BELOW THIS LINE.
